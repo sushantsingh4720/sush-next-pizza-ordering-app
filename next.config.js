@@ -1,5 +1,11 @@
 module.exports = {
-  images:{
-    domains:["res.cloudinary.com"]
-  }
-}
+  images: {
+    remotePatterns: [
+      {
+        protocol: "http",
+        hostname: "res.cloudinary.com",
+        pathname: "**",
+      },
+    ],
+  },
+};

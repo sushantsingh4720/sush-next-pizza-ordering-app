@@ -130,7 +130,7 @@ export const getServerSideProps = async (ctx) => {
   }
 
   try {
-    const productRes = await axios.get("http://localhost:3000/api/products");
+  const productRes = await axios.get("http://localhost:3000/api/products");
   const orderRes = await axios.get("http://localhost:3000/api/orders");
 
   return {
@@ -140,7 +140,12 @@ export const getServerSideProps = async (ctx) => {
     },
   };
   } catch (error) {
-    
+    return {
+      props: {
+        orders: [],
+        products: [],
+      },
+    };
   }
 };
 
