@@ -129,7 +129,8 @@ export const getServerSideProps = async (ctx) => {
     };
   }
 
-  const productRes = await axios.get("http://localhost:3000/api/products");
+  try {
+    const productRes = await axios.get("http://localhost:3000/api/products");
   const orderRes = await axios.get("http://localhost:3000/api/orders");
 
   return {
@@ -138,6 +139,9 @@ export const getServerSideProps = async (ctx) => {
       products: productRes.data,
     },
   };
+  } catch (error) {
+    
+  }
 };
 
 export default Index;
