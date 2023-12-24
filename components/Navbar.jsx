@@ -5,7 +5,6 @@ import Link from "next/link";
 import { LogoutBtn } from "./LogoutBtn";
 
 const Navbar = () => {
-  const quantity = useSelector((state) => state.cart.quantity);
   return (
     <div className={styles.container}>
       <div className={styles.item}>

@@ -1,25 +1,68 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import toast from "react-hot-toast";
 
+//getAllCart
+const getAllCartAPI = async () => {
+  const response = await fetch("/api/cart", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  return response.json();
+};
+
+export const getAllCart = createAsyncThunk(
+  "getAllCart",
+  async (data, { rejectWithValue, dispatch }) => {
+    try {
+      const responseData = await getAllCartAPI();
+      if (responseData.success) {
+        return { cart: responseData.cart };
+      } else {
+        return { cart: [] };
+      }
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
 const cartSlice = createSlice({
   name: "cart",
   initialState: {
-    products: [],
-    quantity: 0,
-    total: 0,
+    cart: [],
+    loading: false,
+    error: false,
+    success: false,
   },
   reducers: {
-    addProduct: (state, action) => {
-      state.products.push(action.payload);
-      state.quantity += 1;
-      state.total += action.payload.price * action.payload.quantity;
+    resetAddCart: (state) => {
+      return {
+        ...state,
+        success: false,
+      };
     },
-    reset: (state) => {
-      state.products = [];
-      state.quantity = 0;
-      state.total = 0;
-    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(getAllCart.pending, (state) => {
+        return {
+          ...state,
+          loading: true,
+        };
+      })
+      .addCase(getAllCart.fulfilled, (state, action) => ({
+        ...state,
+        loading: false,
+        ...action.payload,
+      }))
+      .addCase(getAllCart.rejected, (state) => ({
+        ...state,
+        loading: false,
+      }));
   },
 });
 
-export const { addProduct, reset } = cartSlice.actions;
+export const { resetAddCart } = cartSlice.actions;
 export default cartSlice.reducer;

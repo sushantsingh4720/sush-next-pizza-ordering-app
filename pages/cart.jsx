@@ -11,9 +11,12 @@ import axios from "axios";
 import { useRouter } from "next/router";
 import { reset } from "../redux/cartSlice";
 import OrderDetail from "../components/OrderDetail";
+import Loading from "../components/Loading";
 
 const Cart = () => {
-  const cart = useSelector((state) => state.cart);
+  const { cart, loading } = useSelector((state) => state.cart);
+  const { isAuthenticated } = useSelector((state) => state.user);
+
   const [open, setOpen] = useState(false);
   const [cash, setCash] = useState(false);
   const amount = cart.total;
@@ -29,9 +32,7 @@ const Cart = () => {
         dispatch(reset());
         router.push(`/orders/${res.data._id}`);
       }
-    } catch (err) {
-      
-    }
+    } catch (err) {}
   };
 
   // Custom component to wrap the PayPalButtons and handle currency changes
@@ -91,6 +92,13 @@ const Cart = () => {
     );
   };
 
+  useEffect(() => {
+    if (!isAuthenticated) router.push("/login");
+  }, [isAuthenticated]);
+
+  if (loading) {
+    return <Loading />;
+  }
   return (
     <div className={styles.container}>
       <div className={styles.left}>
@@ -106,37 +114,43 @@ const Cart = () => {
             </tr>
           </tbody>
           <tbody>
-            {cart.products.map((product) => (
-              <tr className={styles.tr} key={product._id}>
+            {cart.map((product, index) => (
+              <tr className={styles.tr} key={product.productId._id}>
                 <td>
                   <div className={styles.imgContainer}>
                     <Image
-                      src={product.img}
+                      src={product.productId.img}
                       fill
-                      style={{objectFit:"cover"}}
+                      style={{ objectFit: "cover" }}
                       alt=""
                     />
                   </div>
                 </td>
                 <td>
-                  <span className={styles.name}>{product.title}</span>
+                  <span className={styles.name}>{product.productId.title}</span>
                 </td>
                 <td>
                   <span className={styles.extras}>
                     {product.extras.map((extra) => (
-                      <span key={extra._id}>{extra.text}, </span>
+                      <span key={extra._id}>{extra.text} </span>
                     ))}
                   </span>
                 </td>
                 <td>
-                  <span className={styles.price}>${product.price}</span>
+                  <span className={styles.price}>
+                    $
+                    {product.productId.prices[product.size] +
+                      product.extras?.reduce((accumulator, currentItem) => {
+                        return accumulator + currentItem.price;
+                      }, 0)}
+                  </span>
                 </td>
                 <td>
                   <span className={styles.quantity}>{product.quantity}</span>
                 </td>
                 <td>
                   <span className={styles.total}>
-                    ${product.price * product.quantity}
+                    ${amountCalculator(product)}
                   </span>
                 </td>
               </tr>
@@ -148,13 +162,19 @@ const Cart = () => {
         <div className={styles.wrapper}>
           <h2 className={styles.title}>CART TOTAL</h2>
           <div className={styles.totalText}>
-            <b className={styles.totalTextTitle}>Subtotal:</b>${cart.total}
+            <b className={styles.totalTextTitle}>Subtotal:</b>$
+            {cart?.reduce((accumulator, product) => {
+              return accumulator + amountCalculator(product);
+            }, 0)}
           </div>
           <div className={styles.totalText}>
             <b className={styles.totalTextTitle}>Discount:</b>$0.00
           </div>
           <div className={styles.totalText}>
-            <b className={styles.totalTextTitle}>Total:</b>${cart.total}
+            <b className={styles.totalTextTitle}>Total:</b>$
+            {cart?.reduce((accumulator, product) => {
+              return accumulator + amountCalculator(product);
+            }, 0)}
           </div>
           {open ? (
             <div className={styles.paymentMethods}>
@@ -189,3 +209,13 @@ const Cart = () => {
 };
 
 export default Cart;
+
+function amountCalculator(product) {
+  const value =
+    (product.productId.prices[product.size] +
+      (product.extras?.reduce((accumulator, currentItem) => {
+        return accumulator + currentItem.price;
+      }, 0) || 0)) *
+    product.quantity;
+  return value;
+}

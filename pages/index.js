@@ -3,11 +3,20 @@ import Head from "next/head";
 import Featured from "../components/Featured";
 import PizzaList from "../components/PizzaList";
 import styles from "../styles/Home.module.css";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { getAllCart } from "../redux/cartSlice";
 
-export default function Home({ pizzaList }) {
+export default function Home() {
 
-   const {product}=useSelector(state=>state.product)
+  const { product } = useSelector((state) => state.product);
+
+  const dispatch=useDispatch()
+
+  useEffect(() => {
+    dispatch(getAllCart());
+  }, []);
+
   return (
     <div className={styles.container}>
       <Head>
@@ -20,5 +29,3 @@ export default function Home({ pizzaList }) {
     </div>
   );
 }
-
-

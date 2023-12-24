@@ -21,8 +21,8 @@ const Product = ({ pizza }) => {
   };
 
   const handleSize = (sizeIndex) => {
-    const difference = pizza.prices[sizeIndex] - pizza.prices[size];
     setSize(sizeIndex);
+    const difference = pizza.prices[sizeIndex] - pizza.prices[size];
     changePrice(difference);
   };
 
@@ -59,17 +59,40 @@ const Product = ({ pizza }) => {
         <p className={styles.desc}>{pizza.desc}</p>
         <h3 className={styles.choose}>Choose the size</h3>
         <div className={styles.sizes}>
-          <div className={styles.size} onClick={() => handleSize(0)}>
-            <Image src="/img/size.png" fill alt="" />
-            <span className={styles.number}>Small</span>
+          <div className={styles.outersize} onClick={() => handleSize(0)}>
+            <input
+              className={styles.checkbox}
+              type="checkbox"
+              defaultChecked={size === 0 ? true : false}
+            />
+            <div className={styles.size}>
+              <Image src="/img/size.png"  alt="" width={30} height={30} />
+              <span className={styles.number}>Small</span>
+            </div>
           </div>
-          <div className={styles.size} onClick={() => handleSize(1)}>
-            <Image src="/img/size.png" fill alt="" />
-            <span className={styles.number}>Medium</span>
+          <div className={styles.outersize} onClick={() => handleSize(1)}>
+            <input
+              className={styles.checkbox}
+              type="checkbox"
+              defaultChecked={size === 1 ? true : false}
+            />
+            <div className={styles.size}>
+              <Image src="/img/size.png" width={40} height={40} alt="" />
+              <span className={styles.number}>Medium</span>
+            </div>
           </div>
-          <div className={styles.size} onClick={() => handleSize(2)}>
-            <Image src="/img/size.png" fill alt="" />
-            <span className={styles.number}>Large</span>
+          <div className={styles.outersize} onClick={() => handleSize(2)}>
+            <div>
+              <input
+                className={styles.checkbox}
+                type="checkbox"
+                defaultChecked={size === 2 ? true : false}
+              />
+            </div>
+            <div className={styles.size}>
+              <Image src="/img/size.png" width={50} height={50} alt="" />
+              <span className={styles.number}>Large</span>
+            </div>
           </div>
         </div>
         <h3 className={styles.choose}>Choose additional ingredients</h3>
@@ -111,13 +134,11 @@ export const getServerSideProps = async ({ params }) => {
         headers: { "Content-Type": "application/json" },
       }
     );
-    console.log(res);
-    if (res.data.success)
-      return {
-        props: {
-          pizza: res.data.product,
-        },
-      };
+    return {
+      props: {
+        pizza: res.data.product,
+      },
+    };
   } catch (error) {
     return {
       notFound: true,
