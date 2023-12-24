@@ -43,9 +43,14 @@ const Add = ({ setClose }) => {
         extraOptions,
         img: url,
       };
-
-      await axios.post("http://localhost:3000/api/products", newProduct);
-      setClose(true);
+     console.log(newProduct)
+     try {
+       const res=await axios.post("/api/products/create", newProduct);
+       console.log(res)
+     } catch (error) {
+       console.log(error)
+     }
+      setClose(false);
     } catch (err) {
       
     }

@@ -3,8 +3,11 @@ import Head from "next/head";
 import Featured from "../components/Featured";
 import PizzaList from "../components/PizzaList";
 import styles from "../styles/Home.module.css";
+import { useSelector } from "react-redux";
 
 export default function Home({ pizzaList }) {
+
+   const {product}=useSelector(state=>state.product)
   return (
     <div className={styles.container}>
       <Head>
@@ -13,25 +16,9 @@ export default function Home({ pizzaList }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Featured />
-      <PizzaList pizzaList={pizzaList} />
+      <PizzaList pizzaList={product} />
     </div>
   );
 }
 
-export const getServerSideProps = async (ctx) => {
-  try {
-    const res = await axios.get("http://localhost:3000/api/products");
-    return {
-      props: {
-        pizzaList: res.data.product
-      },
-    };
-  } catch (error) {
-    console.log(error)
-    return {
-      props: {
-        pizzaList: [],
-      },
-    };
-  }
-};
+

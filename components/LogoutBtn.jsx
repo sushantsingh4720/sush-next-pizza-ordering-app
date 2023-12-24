@@ -4,9 +4,10 @@ import { useDispatch, useSelector } from "react-redux";
 import styles from "../styles/LogoutBtn.module.css";
 import { logoutUser ,loggedInUser} from "../redux/userSlice";
 import { useEffect } from "react";
+import { getAllProduct } from "../redux/productSlice";
 export const LogoutBtn = () => {
 
-  const {user,loading, isAuthenticated } = useSelector((state) => state.user);
+  const { isAuthenticated } = useSelector((state) => state.user);
 
   const { quantity } = useSelector((state) => state.cart);
 
@@ -18,7 +19,9 @@ export const LogoutBtn = () => {
 
 
   useEffect(()=>{
+    console.log("hii")
       dispatch(loggedInUser())
+      dispatch(getAllProduct())
   },[])
 
 
