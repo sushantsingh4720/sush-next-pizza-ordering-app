@@ -2,16 +2,20 @@ import styles from "../../styles/Product.module.css";
 import Image from "next/image";
 import { useState } from "react";
 import axios from "axios";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addProduct } from "../../redux/cartSlice";
-
+import { useRouter } from "next/router";
+import toast from "react-hot-toast";
 const Product = ({ pizza }) => {
+  const { isAuthenticated } = useSelector((state) => state.user);
+
   const [price, setPrice] = useState(pizza.prices[0]);
   const [size, setSize] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [extras, setExtras] = useState([]);
-  const dispatch = useDispatch();
 
+  const dispatch = useDispatch();
+  const router = useRouter();
   const changePrice = (number) => {
     setPrice(price + number);
   };
@@ -35,14 +39,18 @@ const Product = ({ pizza }) => {
   };
 
   const handleClick = () => {
-    dispatch(addProduct({...pizza, extras, price, quantity}));
+    if (!isAuthenticated) {
+      toast.error("Please login first");
+      return router.push("/login");
+    }
+    dispatch(addProduct({ ...pizza, extras, price, quantity }));
   };
 
   return (
     <div className={styles.container}>
       <div className={styles.left}>
         <div className={styles.imgContainer}>
-          <Image src={pizza.img} style={{objectFit:"contain"}} fill alt="" />
+          <Image src={pizza.img} style={{ objectFit: "contain" }} fill alt="" />
         </div>
       </div>
       <div className={styles.right}>
@@ -96,18 +104,25 @@ const Product = ({ pizza }) => {
 };
 
 export const getServerSideProps = async ({ params }) => {
- try {
-  const res = await axios.get(
-    `http://localhost:3000/api/products/${params.id}`
-  );
-  return {
-    props: {
-      pizza: res.data,
-    },
-  };
- } catch (error) {
-  
- }
+  try {
+    const res = await axios.get(
+      `http://localhost:3000/api/products/${params.id}`,
+      {
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+    console.log(res);
+    if (res.data.success)
+      return {
+        props: {
+          pizza: res.data.product,
+        },
+      };
+  } catch (error) {
+    return {
+      notFound: true,
+    };
+  }
 };
 
 export default Product;

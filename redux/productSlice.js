@@ -47,9 +47,11 @@ export const addProduct = createAsyncThunk(
     try {
       const responseData = await addProductAPI(data);
       if (responseData.success) {
-        toast.message(responseData.message);
+        toast.success(responseData.message);
+        return {success:true}
       } else {
-        toast.message(responseData.message);
+        toast.error(responseData.message);
+        return {success:false}
       }
     } catch (error) {
       return rejectWithValue(error.message);
@@ -57,11 +59,25 @@ export const addProduct = createAsyncThunk(
   }
 );
 
-const initialState = { product: [], success: false, loading: false };
+const initialState = {
+  product: [],
+  success: false,
+  loading: false,
+  error: false,
+};
 
 const productSlice = createSlice({
   name: "product",
   initialState,
+  reducers: {
+    resetAddProduct: (state) => {
+      return {
+        ...state,
+        success: false,
+      };
+    },
+    
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getAllProduct.pending, (state) => {
@@ -78,8 +94,29 @@ const productSlice = createSlice({
       .addCase(getAllProduct.rejected, (state) => ({
         ...state,
         loading: false,
-      }));
+      }))
+      .addCase(addProduct.pending, (state) => {
+        return {
+          ...state,
+          loading: true,
+        };
+      })
+      .addCase(addProduct.fulfilled, (state) => {
+        return {
+          ...state,
+          loading: false,
+          success: true,
+        };
+      })
+      .addCase(addProduct.rejected, (state) => {
+        return {
+          ...state,
+          loading: false,
+          success: false,
+        };
+      });
   },
 });
 
+export const {resetAddProduct}=productSlice.actions
 export default productSlice.reducer;

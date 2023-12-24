@@ -1,7 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "../styles/Add.module.css";
 import axios from "axios";
 import { useRouter } from "next/router";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addProduct,
+  getAllProduct,
+  resetAddProduct,
+} from "../redux/productSlice";
 
 const Add = ({ setClose }) => {
   const [file, setFile] = useState(null);
@@ -10,6 +16,10 @@ const Add = ({ setClose }) => {
   const [prices, setPrices] = useState([]);
   const [extraOptions, setExtraOptions] = useState([]);
   const [extra, setExtra] = useState(null);
+
+  const {success } = useSelector((state) => state.product);
+
+  const dispatch = useDispatch();
 
   const changePrice = (e, index) => {
     const currentPrices = prices;
@@ -29,32 +39,34 @@ const Add = ({ setClose }) => {
     const data = new FormData();
     data.append("file", file);
     data.append("upload_preset", "ufworjez");
-    try {
-      const uploadRes = await axios.post(
-        "https://api.cloudinary.com/v1_1/dol4aj9y4/image/upload",
-        data
-      );
 
-      const { url } = uploadRes.data;
-      const newProduct = {
-        title,
-        desc,
-        prices,
-        extraOptions,
-        img: url,
-      };
-     console.log(newProduct)
-     try {
-       const res=await axios.post("/api/products/create", newProduct);
-       console.log(res)
-     } catch (error) {
-       console.log(error)
-     }
-      setClose(false);
-    } catch (err) {
-      
-    }
+    const uploadRes = await axios.post(
+      "https://api.cloudinary.com/v1_1/dol4aj9y4/image/upload",
+      data
+    );
+    const { url } = uploadRes.data;
+    const newProduct = {
+      title,
+      desc,
+      prices,
+      extraOptions,
+      img: url,
+    };
+    dispatch(addProduct(newProduct));
   };
+  useEffect(() => {
+    if (success) {
+      setClose(false);
+      dispatch(resetAddProduct);
+      dispatch(getAllProduct());
+      setFile(null);
+      setTitle(null);
+      setDesc(null);
+      setPrices([]);
+      setExtraOptions([]);
+      setExtra(null);
+    }
+  }, [success]);
 
   return (
     <div className={styles.container}>

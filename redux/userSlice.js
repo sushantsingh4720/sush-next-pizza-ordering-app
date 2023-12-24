@@ -124,7 +124,7 @@ export const loggedInUser = createAsyncThunk(
   }
 );
 
-const initialState = { user: {}, loading: false, isAuthenticated: false };
+const initialState = { user: {}, loading: false, isAuthenticated: false ,error:false};
 
 const userSlice = createSlice({
   name: "user",

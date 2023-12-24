@@ -1,48 +1,24 @@
+import mongoose from "mongoose";
+import { asyncError, errorHandler } from "../../../middlewares/error";
 import dbConnect from "../../../utils/mongo";
-import Product from "../../../models/Product";
+import { Product } from "../../../models/product";
 
-export default async function handler(req, res) {
-  const {
-    method,
-    query: { id },
-    cookies
-  } = req;
-  const token = cookies.token
-
-  dbConnect();
-
-  if (method === "GET") {
-    try {
-      const product = await Product.findById(id);
-      res.status(200).json(product);
-    } catch (err) {
-      res.status(500).json(err);
-    }
+const handler = asyncError(async (req, res) => {
+  await dbConnect();
+  if (req.method === "GET") {
+    const { id } = req.query;
+    if (!id) return errorHandler(res, 400, "Please Provid a valid Product Id");
+    const isObjectId = mongoose.Types.ObjectId.isValid(id);
+    if (!isObjectId)
+      return errorHandler(res, 400, "Please Provid a valid Product Id");
+    const product = await Product.findById(id);
+    if (!product) return errorHandler(res, 404, "Not Found");
+    res.status(200).json({
+      success: true,
+      message: "Product Fetched successfully",
+      product,
+    });
   }
+});
 
-  if (method === "PUT") {
-    if(!token || token !== process.env.token){
-      return res.status(401).json("Not authenticated!")
-    }
-    try {
-      const product = await Product.findByIdAndUpdate(id, req.body, {
-        new: true,
-      });
-      res.status(200).json(product);
-    } catch (err) {
-      res.status(500).json(err);
-    }
-  }
-
-  if (method === "DELETE") {
-    if(!token || token !== process.env.token){
-      return res.status(401).json("Not authenticated!")
-    }
-    try {
-      await Product.findByIdAndDelete(id);
-      res.status(200).json("The product has been deleted!");
-    } catch (err) {
-      res.status(500).json(err);
-    }
-  }
-}
+export default handler;

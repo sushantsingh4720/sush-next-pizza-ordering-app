@@ -19,7 +19,6 @@ export const LogoutBtn = () => {
 
 
   useEffect(()=>{
-    console.log("hii")
       dispatch(loggedInUser())
       dispatch(getAllProduct())
   },[])
