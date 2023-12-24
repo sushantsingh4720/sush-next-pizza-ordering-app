@@ -1,36 +1,18 @@
-import dbConnect from "../../../util/mongo";
+import { asyncError, errorHandler } from "../../../middlewares/error";
+import { checkAuth } from "../../../utils/features";
 
-const handler = async (req, res) => {
-  const { method } = req;
+const handler = asyncError(async (req, res) => {
+  if (req.method !== "GET")
+    return errorHandler(res, 400, "Only GET Method is allowed");
 
-  await dbConnect();
+  const user = await checkAuth(req);
 
-  if (method === "POST") {
-    console.log(res);
-    try {
-      res
-        .setHeader(
-          "Set-Cookie",
-          serialize("token", true ? "hjjjjjjjjjjjjjj" : "", {
-            path: "/",
-            httpOnly: true,
-            maxAge: set ? 15 * 24 * 60 * 60 * 1000 : 0,
-          })
-        )
-        .status(200)
-        .json({ success: true, message: "Login successfully" });
-    } catch (err) {
-      console.log(err);
-      res.status(500).json(err);
-    }
-  }
+  if (!user) return errorHandler(res, 401, "Login First");
 
-  if (method === "POST") {
-    try {
-    } catch (err) {
-      res.status(500).json(err);
-    }
-  }
-};
+  res.status(200).json({
+    success: true,
+    user,
+  });
+});
 
 export default handler;
