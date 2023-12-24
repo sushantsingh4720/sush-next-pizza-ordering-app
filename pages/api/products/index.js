@@ -1,31 +1,17 @@
 import dbConnect from "../../../utils/mongo";
-import Product from "../../../models/Product";
+import { Product } from "../../../models/product";
+import { asyncError } from "../../../middlewares/error";
 
-export default async function handler(req, res) {
-  const { method, cookies } = req;
-
-  const token = cookies.token
-
+const handler = asyncError(async (req, res) => {
   await dbConnect();
+  if (req.method !== "GET")
+    return errorHandler(res, 400, "Only GET Method is allowed");
+  const product = await Product.find();
+  res.status(200).json({
+    success: true,
+    message: "Product successfully fatched",
+    product,
+  });
+});
 
-  if (method === "GET") {
-    try {
-      const products = await Product.find();
-      res.status(200).json(products);
-    } catch (err) {
-      res.status(500).json(err);
-    }
-  }
-
-  if (method === "POST") {
-    if(!token || token !== process.env.token){
-      return res.status(401).json("Not authenticated!")
-    }
-    try {
-      const product = await Product.create(req.body);
-      res.status(201).json(product);
-    } catch (err) {
-      res.status(500).json(err);
-    }
-  }
-}
+export default handler;

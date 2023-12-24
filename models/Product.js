@@ -1,7 +1,12 @@
-import mongoose from "mongoose";
+import mongoose,{Schema} from "mongoose";
 
 const ProductSchema = new mongoose.Schema(
   {
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
     title: {
       type: String,
       required: true,
@@ -32,5 +37,5 @@ const ProductSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export const Product= mongoose.models.Product ||
-  mongoose.model("Product", ProductSchema);
+export const Product =
+  mongoose.models.Product || mongoose.model("Product", ProductSchema);
