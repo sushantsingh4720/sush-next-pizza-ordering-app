@@ -7,9 +7,10 @@ import AddButton from "../components/AddButton";
 import Featured from "../components/Featured";
 import PizzaList from "../components/PizzaList";
 import styles from "../styles/Home.module.css";
+import Loading from "../components/Loading";
 
 export default function Home({ pizzaList, admin }) {
-  const [close, setClose] = useState(true);
+  // const [close, setClose] = useState(true);
   return (
     <div className={styles.container}>
       <Head>
@@ -18,9 +19,9 @@ export default function Home({ pizzaList, admin }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Featured />
-      {<AddButton setClose={setClose} />}
+      {/* {<AddButton setClose={setClose} />} */}
       <PizzaList pizzaList={pizzaList} />
-      {!close && <Add setClose={setClose} />}
+      {/* {!close && <Add setClose={setClose} />} */}
     </div>
   );
 }
@@ -35,12 +36,12 @@ export const getServerSideProps = async (ctx) => {
 
   try {
     const res = await axios.get("http://localhost:3000/api/products");
-  return {
-    props: {
-      pizzaList: res.data,
-      admin,
-    },
-  };
+    return {
+      props: {
+        pizzaList: res.data,
+        admin,
+      },
+    };
   } catch (error) {
     return {
       props: {
@@ -49,5 +50,4 @@ export const getServerSideProps = async (ctx) => {
       },
     };
   }
-  
 };

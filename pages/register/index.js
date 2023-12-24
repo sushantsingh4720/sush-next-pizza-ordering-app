@@ -5,6 +5,7 @@ import React, {  useEffect, useState } from "react";
 import styles from "../../styles/Login.module.css"
 import { useSelector } from "react-redux";
 import { useRouter } from 'next/router';
+import Loading from "../../components/Loading";
 
 const Register = () => {
   const { user } = useSelector((state) => state.user);
@@ -47,7 +48,7 @@ const Register = () => {
 
 
   if (user && user._id) {
-    return <div>loading</div>; // or any other component you want to render instead
+    return <Loading/>; // or any other component you want to render instead
   }
 
 
