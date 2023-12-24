@@ -1,53 +1,33 @@
 "use client";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import styles from "../../styles/Login.module.css";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser, logout } from "../../redux/userSlice";
+
 import Link from "next/link";
 import { useRouter } from 'next/router';
 import Loading from "../../components/Loading";
 
 const Login = () => {
-  const { user } = useSelector((store) => store.user);
+  const { user, loading, isAuthenticated } = useSelector((store) => store.user);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const router = useRouter();
+  const dispatch = useDispatch();
 
-  
-  useEffect(() => {
-     if (user._id) {
-       router.push('/');
-     }
-   }, [user?._id]);
+  // Move the logic here
+  if (isAuthenticated ) {
+    router.push('/');
+  }
 
   const loginHandler = async (e) => {
     e.preventDefault();
-
-    // try {
-    //   const res = await fetch("/api/auth/login", {
-    //     method: "POST",
-    //     body: JSON.stringify({
-    //       email,
-    //       password,
-    //     }),
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //   });
-    //   const data = await res.json();
-    //   if (!data.success) return toast.error(data.message);
-    //   setUser(data.user);
-    //   toast.success(data.message);
-    // } catch (error) {
-    //   return toast.error(error);
-    // }
+    dispatch(loginUser({ email, password }));
   };
 
-
-
-  if (user && user._id) {
-    return <Loading/>; // or any other component you want to render instead
+  if (loading) {
+    return <Loading />;
   }
 
   return (

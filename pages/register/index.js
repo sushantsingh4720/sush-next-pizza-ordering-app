@@ -3,54 +3,33 @@
 import Link from "next/link";
 import React, {  useEffect, useState } from "react";
 import styles from "../../styles/Login.module.css"
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from 'next/router';
 import Loading from "../../components/Loading";
+import { registerUser } from "../../redux/userSlice";
 
 const Register = () => {
-  const { user } = useSelector((state) => state.user);
+  const { user,loading,isAuthenticated } = useSelector((state) => state.user);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const router = useRouter();
+  const dispatch = useDispatch();
 
-  useEffect(() => {
-    if (user._id) {
-      router.push('/');
-    }
-  }, [user?._id]);
+  // Move the logic here
+  if (isAuthenticated ) {
+    router.push('/');
+  }
 
   const registerHandler = async (e) => {
     e.preventDefault();
-
-    // try {
-    //   const res = await fetch("/api/auth/register", {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify({
-    //       name,
-    //       email,
-    //       password,
-    //     }),
-    //   });
-
-    //   const data = await res.json();
-    //   if (!data.success) return toast.error(data.message);
-    //   setUser(data.user);
-    //   toast.success(data.message);
-    // } catch (error) {
-    //   return toast.error(error);
-    // }
+    dispatch(registerUser({ email, password ,name}));
   };
 
-
-  if (user && user._id) {
-    return <Loading/>; // or any other component you want to render instead
+  if (loading) {
+    return <Loading />;
   }
-
 
   return (
     <div className={styles.login}>

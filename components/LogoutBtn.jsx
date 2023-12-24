@@ -1,27 +1,28 @@
 import Link from "next/link";
 import Image from "next/image";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import styles from "../styles/LogoutBtn.module.css";
+import { logoutUser ,loggedInUser} from "../redux/userSlice";
+import { useEffect } from "react";
 export const LogoutBtn = () => {
-  const { user } = useSelector((state) => state.user);
+
+  const {user,loading, isAuthenticated } = useSelector((state) => state.user);
+
   const { quantity } = useSelector((state) => state.cart);
+
+  const dispatch=useDispatch()
+  
   const logoutHandler = async () => {
-    try {
-      const res = await fetch("/api/auth/logout");
-
-      const data = await res.json();
-
-      if (!data.success) toast.error(data.message);
-
-      setUser({});
-
-      toast.success(data.message);
-    } catch (error) {
-      return toast.error(error);
-    }
+     dispatch(logoutUser())
   };
 
-  return user._id ? (
+
+  useEffect(()=>{
+      dispatch(loggedInUser())
+  },[])
+
+
+  return isAuthenticated ? (
     <>
       <Link href="/cart" passHref>
         <div className={styles.item}>
