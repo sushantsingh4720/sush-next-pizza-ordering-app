@@ -59,6 +59,36 @@ export const addProductInCart = createAsyncThunk(
   }
 );
 
+//add new product in cart
+const removeProductInCartAPI = async (data) => {
+  const {id}=data
+  const response = await fetch(`/api/cart/delete/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return response.json();
+};
+
+export const removeProductInCart = createAsyncThunk(
+  "removeProductInCart",
+  async (data, { rejectWithValue, dispatch }) => {
+    try {
+      const responseData = await removeProductInCartAPI(data);
+      if (responseData.success) {
+        toast.success(responseData.message);
+        return { success: true };
+      } else {
+        toast.error(responseData.message);
+        return { success: false };
+      }
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 const cartSlice = createSlice({
   name: "cart",
   initialState: {
@@ -105,6 +135,26 @@ const cartSlice = createSlice({
         };
       })
       .addCase(addProductInCart.rejected, (state) => {
+        return {
+          ...state,
+          loading: false,
+          success: false,
+        };
+      })
+      .addCase(removeProductInCart.pending, (state) => {
+        return {
+          ...state,
+          loading: true,
+        };
+      })
+      .addCase(removeProductInCart.fulfilled, (state) => {
+        return {
+          ...state,
+          loading: false,
+          success: true,
+        };
+      })
+      .addCase(removeProductInCart.rejected, (state) => {
         return {
           ...state,
           loading: false,

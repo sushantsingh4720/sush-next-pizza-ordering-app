@@ -9,12 +9,12 @@ import {
 } from "@paypal/react-paypal-js";
 import axios from "axios";
 import { useRouter } from "next/router";
-import { reset } from "../redux/cartSlice";
+import { getAllCart, removeProductInCart, reset, resetAddCart } from "../redux/cartSlice";
 import OrderDetail from "../components/OrderDetail";
 import Loading from "../components/Loading";
 
 const Cart = () => {
-  const { cart } = useSelector((state) => state.cart);
+  const { cart ,success,loading:cartLoading} = useSelector((state) => state.cart);
   const { isAuthenticated, loading } = useSelector((state) => state.user);
 
   const [open, setOpen] = useState(false);
@@ -92,13 +92,26 @@ const Cart = () => {
     );
   };
 
+  const handleRemove=(id)=>{
+    dispatch(removeProductInCart({id}))
+  }
   useEffect(() => {
     if (isAuthenticated === false && loading === false) router.push("/login");
   }, [isAuthenticated, loading]);
 
-  if (loading) {
+  useEffect(() => {
+    if (success) {
+      dispatch(resetAddCart());
+      dispatch(getAllCart());
+    }
+  }, [success]);
+
+  if (loading||cartLoading) {
     return <Loading />;
   }
+
+
+
   return (
     <div className={styles.container}>
       <div className={styles.left}>
@@ -155,7 +168,7 @@ const Cart = () => {
                   </span>
                 </td>
                 <td>
-                  <button className={styles.removebutton}>Remove</button>
+                  <button className={styles.removebutton} onClick={()=>handleRemove(product._id)}>Remove</button>
                 </td>
               </tr>
             ))}
