@@ -1,14 +1,21 @@
 import styles from "../../styles/Product.module.css";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { addProduct } from "../../redux/cartSlice";
+import {
+  addProductInCart,
+  getAllCart,
+  resetAddCart,
+} from "../../redux/cartSlice";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
-const Product = ({ pizza }) => {
-  const { isAuthenticated } = useSelector((state) => state.user);
+import Loading from "../../components/Loading";
 
+const Product = ({ pizza }) => {
+  
+  const { isAuthenticated } = useSelector((state) => state.user);
+  const { success, loading } = useSelector((state) => state.cart);
   const [price, setPrice] = useState(pizza.prices[0]);
   const [size, setSize] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -39,12 +46,27 @@ const Product = ({ pizza }) => {
   };
 
   const handleClick = () => {
-    if (!isAuthenticated) {
+    if (isAuthenticated === false) {
       toast.error("Please login first");
       return router.push("/login");
     }
-    dispatch(addProduct({ ...pizza, extras, price, quantity }));
+    dispatch(
+      addProductInCart({ productId: pizza._id, extras, quantity, size })
+    );
   };
+
+  useEffect(() => {
+    if (success) {
+      dispatch(resetAddCart());
+      dispatch(getAllCart());
+      setPrice(pizza.prices[0]);
+      setSize(0);
+      setExtras([]);
+      setQuantity(1);
+    }
+  }, [success]);
+
+  if (loading) return <Loading />;
 
   return (
     <div className={styles.container}>

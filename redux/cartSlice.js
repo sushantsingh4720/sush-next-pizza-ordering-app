@@ -28,11 +28,41 @@ export const getAllCart = createAsyncThunk(
     }
   }
 );
+
+//add new product in cart
+const addProductInCartAPI = async (data) => {
+  const response = await fetch("/api/cart/create", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+  return response.json();
+};
+
+export const addProductInCart = createAsyncThunk(
+  "addProductInCart",
+  async (data, { rejectWithValue, dispatch }) => {
+    try {
+      const responseData = await addProductInCartAPI(data);
+      if (responseData.success) {
+        toast.success(responseData.message);
+        return { success: true };
+      } else {
+        toast.error(responseData.message);
+        return { success: false };
+      }
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 const cartSlice = createSlice({
   name: "cart",
   initialState: {
     cart: [],
-    loading: false,
     error: false,
     success: false,
   },
@@ -60,7 +90,27 @@ const cartSlice = createSlice({
       .addCase(getAllCart.rejected, (state) => ({
         ...state,
         loading: false,
-      }));
+      }))
+      .addCase(addProductInCart.pending, (state) => {
+        return {
+          ...state,
+          loading: true,
+        };
+      })
+      .addCase(addProductInCart.fulfilled, (state) => {
+        return {
+          ...state,
+          loading: false,
+          success: true,
+        };
+      })
+      .addCase(addProductInCart.rejected, (state) => {
+        return {
+          ...state,
+          loading: false,
+          success: false,
+        };
+      });
   },
 });
 
