@@ -1,27 +1,22 @@
+import { asyncError, errorHandler } from "../../../middlewares/error";
 import dbConnect from "../../../utils/mongo";
-import Order from "../../../models/Order";
-
-const handler = async (req, res) => {
-  const { method } = req;
-
+import { checkAuth } from "../../../utils/features";
+import { Order } from "../../../models/order";
+const handler = asyncError(async (req, res) => {
   await dbConnect();
-
-  if (method === "GET") {
-    try {
-      const orders = await Order.find();
-      res.status(200).json(orders);
-    } catch (err) {
-      res.status(500).json(err);
-    }
-  }
-  if (method === "POST") {
-    try {
-      const order = await Order.create(req.body);
-      res.status(201).json(order);
-    } catch (err) {
-      res.status(500).json(err);
-    }
-  }
-};
+  if (req.method !== "GET")
+    return errorHandler(res, 400, "Only GET Method is allowed");
+  const user = await checkAuth(req);
+  if (!user) return errorHandler(res, 401, "Login First");
+  const orders = await Order.find({ userId: user._id }).populate({
+    path: "orders.userId",
+    select: "name email img phone", // Add the fields you want to include
+  });
+  res.status(200).json({
+    success: true,
+    message: "Orders successfully fatched",
+    orders,
+  });
+});
 
 export default handler;

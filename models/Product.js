@@ -37,5 +37,14 @@ const ProductSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Add a pre-hook to populate the 'userId' field in the 'product' array with selected fields
+ProductSchema.pre("find", function (next) {
+  this.populate({
+    path: "userId",
+    select: "name email img phone", // Add the fields you want to include
+  });
+  next();
+});
+
 export const Product =
   mongoose.models.Product || mongoose.model("Product", ProductSchema);

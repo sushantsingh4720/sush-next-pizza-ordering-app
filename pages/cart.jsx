@@ -19,7 +19,9 @@ const Cart = () => {
 
   const [open, setOpen] = useState(false);
   const [cash, setCash] = useState(false);
-  const amount = cart.total;
+  const amount = cart?.reduce((accumulator, product) => {
+    return accumulator + amountCalculator(product);
+  }, 0);
   const currency = "USD";
   const style = { layout: "vertical" };
   const dispatch = useDispatch();
@@ -82,7 +84,7 @@ const Cart = () => {
               createOrder({
                 customer: shipping.name.full_name,
                 address: shipping.address.address_line_1,
-                total: cart.total,
+                total: amount,
                 method: 1,
               });
             });
@@ -204,7 +206,7 @@ const Cart = () => {
               <PayPalScriptProvider
                 options={{
                   "client-id":
-                    "ATTL8fDJKfGzXNH4VVuDy1qW4_Jm8S0sqmnUTeYtWpqxUJLnXIn90V8YIGDg-SNPaB70Hg4mko_fde4-",
+                    "AR7nxRdxQ2cMqfodaituLSAC08A9Auo-YTkbmFy4vIwFZmbxL326ZWW_l1CiEfgtDhff7q_GWEOtkx52",
                   components: "buttons",
                   currency: "USD",
                   "disable-funding": "credit,card,p24",
