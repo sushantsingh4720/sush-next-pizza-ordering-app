@@ -63,10 +63,11 @@ const Product = ({ pizza }) => {
             <input
               className={styles.checkbox}
               type="checkbox"
-              defaultChecked={size === 0 ? true : false}
+              checked={size === 0}
+              onChange={() => {}}
             />
             <div className={styles.size}>
-              <Image src="/img/size.png"  alt="" width={30} height={30} />
+              <Image src="/img/size.png" alt="" width={30} height={30} />
               <span className={styles.number}>Small</span>
             </div>
           </div>
@@ -74,7 +75,8 @@ const Product = ({ pizza }) => {
             <input
               className={styles.checkbox}
               type="checkbox"
-              defaultChecked={size === 1 ? true : false}
+              checked={size === 1}
+              onChange={() => {}}
             />
             <div className={styles.size}>
               <Image src="/img/size.png" width={40} height={40} alt="" />
@@ -86,7 +88,8 @@ const Product = ({ pizza }) => {
               <input
                 className={styles.checkbox}
                 type="checkbox"
-                defaultChecked={size === 2 ? true : false}
+                checked={size === 2}
+                onChange={() => {}}
               />
             </div>
             <div className={styles.size}>

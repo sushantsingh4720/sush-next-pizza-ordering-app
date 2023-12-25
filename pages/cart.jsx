@@ -14,8 +14,8 @@ import OrderDetail from "../components/OrderDetail";
 import Loading from "../components/Loading";
 
 const Cart = () => {
-  const { cart, loading } = useSelector((state) => state.cart);
-  const { isAuthenticated } = useSelector((state) => state.user);
+  const { cart } = useSelector((state) => state.cart);
+  const { isAuthenticated,loading } = useSelector((state) => state.user);
 
   const [open, setOpen] = useState(false);
   const [cash, setCash] = useState(false);
@@ -91,10 +91,9 @@ const Cart = () => {
       </>
     );
   };
-
   useEffect(() => {
-    if (!isAuthenticated) router.push("/login");
-  }, [isAuthenticated]);
+    if (isAuthenticated===false&&loading===false) router.push("/login");
+  }, [isAuthenticated,loading]);
 
   if (loading) {
     return <Loading />;

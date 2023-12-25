@@ -2,29 +2,26 @@ import Link from "next/link";
 import Image from "next/image";
 import { useDispatch, useSelector } from "react-redux";
 import styles from "../styles/LogoutBtn.module.css";
-import { logoutUser ,loggedInUser} from "../redux/userSlice";
-import { useEffect } from "react";
+import { loggedInUser, logoutUser } from "../redux/userSlice";
 import { getAllProduct } from "../redux/productSlice";
 import { getAllCart } from "../redux/cartSlice";
+import { useEffect } from "react";
+
 export const LogoutBtn = () => {
-
   const { isAuthenticated } = useSelector((state) => state.user);
-  const {cart} =useSelector((state)=>state.cart)
-  const { quantity } = useSelector((state) => state.cart);
+  const { cart } = useSelector((state) => state.cart);
 
-  const dispatch=useDispatch()
-  
+  const dispatch = useDispatch();
+
   const logoutHandler = async () => {
-     dispatch(logoutUser())
+    dispatch(logoutUser());
   };
 
-
-  useEffect(()=>{
-      dispatch(loggedInUser())
-      dispatch(getAllProduct())
-      dispatch(getAllCart())
-  },[])
-
+  useEffect(() => {
+    dispatch(getAllCart());
+    dispatch(getAllProduct());
+    dispatch(loggedInUser());
+  }, []);
 
   return isAuthenticated ? (
     <>
@@ -41,6 +38,8 @@ export const LogoutBtn = () => {
       </button>
     </>
   ) : (
-    <Link className={styles.btn} href={"/login"}>Login</Link>
+    <Link className={styles.btn} href={"/login"}>
+      Login
+    </Link>
   );
 };

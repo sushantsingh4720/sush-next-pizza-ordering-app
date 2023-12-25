@@ -17,7 +17,7 @@ const Login = () => {
   const dispatch = useDispatch();
 
   // Move the logic here
-  if (isAuthenticated ) {
+  if (isAuthenticated===true&&loading===false ) {
     router.push('/');
   }
 

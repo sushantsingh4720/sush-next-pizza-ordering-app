@@ -1,15 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import React, {  useEffect, useState } from "react";
-import styles from "../../styles/Login.module.css"
+import React, { useEffect, useState } from "react";
+import styles from "../../styles/Login.module.css";
 import { useDispatch, useSelector } from "react-redux";
-import { useRouter } from 'next/router';
+import { useRouter } from "next/router";
 import Loading from "../../components/Loading";
 import { registerUser } from "../../redux/userSlice";
 
 const Register = () => {
-  const { user,loading,isAuthenticated } = useSelector((state) => state.user);
+  const { loading, isAuthenticated } = useSelector((state) => state.user);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,13 +18,14 @@ const Register = () => {
   const dispatch = useDispatch();
 
   // Move the logic here
-  if (isAuthenticated ) {
-    router.push('/');
+  // Move the logic here
+  if (isAuthenticated === true && loading === false) {
+    router.push("/");
   }
 
   const registerHandler = async (e) => {
     e.preventDefault();
-    dispatch(registerUser({ email, password ,name}));
+    dispatch(registerUser({ email, password, name }));
   };
 
   if (loading) {

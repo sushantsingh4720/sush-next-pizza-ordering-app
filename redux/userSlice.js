@@ -101,8 +101,7 @@ const loggedInUserAPI = async () => {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-    },
-    credentials: "include"
+    }
   });
 
   return response.json();
@@ -124,7 +123,7 @@ export const loggedInUser = createAsyncThunk(
   }
 );
 
-const initialState = { user: {}, loading: false, isAuthenticated: false ,error:false};
+const initialState = { user: {}, isAuthenticated: false ,error:false};
 
 const userSlice = createSlice({
   name: "user",
