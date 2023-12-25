@@ -15,7 +15,7 @@ import Loading from "../components/Loading";
 
 const Cart = () => {
   const { cart } = useSelector((state) => state.cart);
-  const { isAuthenticated,loading } = useSelector((state) => state.user);
+  const { isAuthenticated, loading } = useSelector((state) => state.user);
 
   const [open, setOpen] = useState(false);
   const [cash, setCash] = useState(false);
@@ -91,9 +91,10 @@ const Cart = () => {
       </>
     );
   };
+
   useEffect(() => {
-    if (isAuthenticated===false&&loading===false) router.push("/login");
-  }, [isAuthenticated,loading]);
+    if (isAuthenticated === false && loading === false) router.push("/login");
+  }, [isAuthenticated, loading]);
 
   if (loading) {
     return <Loading />;
@@ -110,11 +111,12 @@ const Cart = () => {
               <th>Price</th>
               <th>Quantity</th>
               <th>Total</th>
+              <th className={styles.lastthchild}>Remove</th>
             </tr>
           </tbody>
           <tbody>
             {cart.map((product, index) => (
-              <tr className={styles.tr} key={product.productId._id}>
+              <tr className={styles.tr} key={product._id}>
                 <td>
                   <div className={styles.imgContainer}>
                     <Image
@@ -151,6 +153,9 @@ const Cart = () => {
                   <span className={styles.total}>
                     ${amountCalculator(product)}
                   </span>
+                </td>
+                <td>
+                  <button className={styles.removebutton}>Remove</button>
                 </td>
               </tr>
             ))}
@@ -202,7 +207,7 @@ const Cart = () => {
           )}
         </div>
       </div>
-      {cash && <OrderDetail total={cart.total} createOrder={createOrder} />}
+      {cash && <OrderDetail total={cart.total} createOrder={createOrder} setCash={setCash}/>}
     </div>
   );
 };

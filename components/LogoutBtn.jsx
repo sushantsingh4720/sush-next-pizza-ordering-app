@@ -18,10 +18,13 @@ export const LogoutBtn = () => {
   };
 
   useEffect(() => {
-    dispatch(getAllCart());
     dispatch(getAllProduct());
     dispatch(loggedInUser());
   }, []);
+
+  useEffect(() => {
+    if (isAuthenticated ) dispatch(getAllCart());
+  }, [isAuthenticated]);
 
   return isAuthenticated ? (
     <>
