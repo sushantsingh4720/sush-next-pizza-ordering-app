@@ -5,7 +5,7 @@ import AddButton from "../../components/AddButton";
 import Add from "../../components/Add";
 import { useSelector } from "react-redux";
 
-const Product = ({ pizzaList }) => {
+const Product = () => {
   const { user} = useSelector(state => state.user);
   const { product} = useSelector(state => state.product);
   const [close, setClose] = useState(false);

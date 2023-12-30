@@ -5,6 +5,7 @@ import Link from "next/link";
 import { LogoutBtn } from "./LogoutBtn";
 
 const Navbar = () => {
+  const {user}=useSelector(state=>state.user)
   return (
     <div className={styles.container}>
       <div className={styles.item}>
@@ -29,6 +30,9 @@ const Navbar = () => {
           <li className={styles.listItem}>Events</li>
           <li className={styles.listItem}>Blog</li>
           <li className={styles.listItem}>Contact</li>
+          {user.isSeller&&<Link href='/admin' passHref>
+          <li className={styles.listItem}>Admin</li>
+          </Link>}
         </ul>
       </div>
       <LogoutBtn/>

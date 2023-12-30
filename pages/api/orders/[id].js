@@ -14,12 +14,12 @@ const handler = asyncError(async (req, res) => {
   const isObjectId = mongoose.Types.ObjectId.isValid(id);
   if (!isObjectId)
     return errorHandler(res, 400, "Please Provid a valid Product Id");
- 
-    const order = await Order.findOne({ _id: id, userId: user._id }).populate({
-    path: "orders.userId",
+
+  const order = await Order.findOne({ _id: id, userId: user._id }).populate({
+    path: "userId",
     select: "name email img phone", // Add the fields you want to include
   });
-  if(!order) return errorHandler(res,404,'Order Not Found');
+  if (!order) return errorHandler(res, 404, "Order Not Found");
   res.status(200).json({
     success: true,
     message: "Orders successfully fatched",

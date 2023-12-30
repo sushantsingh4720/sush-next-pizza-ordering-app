@@ -41,7 +41,7 @@ const Order = ({ order }) => {
                   <span className={styles.id}>{order._id}</span>
                 </td>
                 <td>
-                  <span className={styles.name}>{order.userId}</span>
+                  <span className={styles.name}>{order.userId.name}</span>
                 </td>
                 <td>
                   <span className={styles.address}>{order.address}</span>
