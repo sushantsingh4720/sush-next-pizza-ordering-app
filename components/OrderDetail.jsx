@@ -1,12 +1,12 @@
 import { useState } from "react";
 import styles from "../styles/OrderDetail.module.css";
 
-const OrderDetail = ({ total, createOrder,setCash }) => {
-  const [customer, setCustomer] = useState("");
+const OrderDetail = ({ total, createOrder,setCash ,cart}) => {
   const [address, setAddress] = useState("");
 
   const handleClick = () => {
-    createOrder({ customer, address, total, method: 0 });
+    createOrder({ cart, address, total, method: 0 });
+    setCash(false)
   };
 
   return (
@@ -16,15 +16,6 @@ const OrderDetail = ({ total, createOrder,setCash }) => {
           X
         </span>
         <h1 className={styles.title}>You will pay $12 after delivery.</h1>
-        <div className={styles.item}>
-          <label className={styles.label}>Name Surname</label>
-          <input
-            placeholder="John Doe"
-            type="text"
-            className={styles.input}
-            onChange={(e) => setCustomer(e.target.value)}
-          />
-        </div>
         <div className={styles.item}>
           <label className={styles.label}>Phone Number</label>
           <input

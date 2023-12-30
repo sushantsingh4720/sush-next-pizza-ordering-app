@@ -29,8 +29,9 @@ const handler = asyncError(async (req, res) => {
 
   if (!order) return errorHandler(res, 400, "Not Success");
 
-  const deletedCartItems = await Cart.deleteMany({
-    deleteCartItems,
+  await Cart.deleteMany({
+    userId: user._id,
+    _id: { $in: deleteCartItems },
   });
 
   res.status(200).json({
@@ -43,7 +44,7 @@ export default handler;
 
 function ordersFuntion(cart) {
   const orders = cart.map((item) => ({
-    userId: item.productId.userId,
+    userId: item.productId.userId._id,
     title: item.productId.title,
     img: item.productId.img,
     extras: item.extras,
@@ -51,9 +52,6 @@ function ordersFuntion(cart) {
     size: item.size,
   }));
 
-  const deleteCartItems = cart.map((item) => ({
-    userId: item.userId,
-    _id: item._id,
-  }));
+  const deleteCartItems = cart.map((item) => [item._id]);
   return { orders, deleteCartItems };
 }

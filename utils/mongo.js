@@ -1,19 +1,17 @@
-import mongoose from "mongoose"
+import mongoose from "mongoose";
 
 const connection = {};
 
 export const dbConnect = async () => {
   try {
-    if(connection.isConnected) {
-      console.log("Using existing connection");
+    if (connection.isConnected) {
       return;
     }
     const db = await mongoose.connect(process.env.MONGO_URL);
     connection.isConnected = db.connections[0].readyState;
   } catch (error) {
-    console.log(error);
     throw new Error(error);
   }
 };
 
-export default dbConnect
+export default dbConnect;

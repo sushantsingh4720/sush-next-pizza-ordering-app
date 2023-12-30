@@ -9,13 +9,25 @@ import {
 } from "@paypal/react-paypal-js";
 import axios from "axios";
 import { useRouter } from "next/router";
-import { getAllCart, removeProductInCart, reset, resetAddCart } from "../redux/cartSlice";
+import {
+  getAllCart,
+  removeProductInCart,
+  reset,
+  resetAddCart,
+} from "../redux/cartSlice";
 import OrderDetail from "../components/OrderDetail";
 import Loading from "../components/Loading";
+import { createOrder, resetAddOrder } from "../redux/orderSlice";
 
 const Cart = () => {
-  const { cart ,success,loading:cartLoading} = useSelector((state) => state.cart);
+  const {
+    cart,
+    success,
+    loading: cartLoading,
+  } = useSelector((state) => state.cart);
   const { isAuthenticated, loading } = useSelector((state) => state.user);
+  const { success: createOrderSuccess, loading: createOrderLoading } =
+    useSelector((state) => state.order);
 
   const [open, setOpen] = useState(false);
   const [cash, setCash] = useState(false);
@@ -27,14 +39,8 @@ const Cart = () => {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const createOrder = async (data) => {
-    try {
-      const res = await axios.post("http://localhost:3000/api/orders", data);
-      if (res.status === 201) {
-        dispatch(reset());
-        router.push(`/orders/${res.data._id}`);
-      }
-    } catch (err) {}
+  const createOrderHandler = async (data) => {
+    dispatch(createOrder(data));
   };
 
   // Custom component to wrap the PayPalButtons and handle currency changes
@@ -81,11 +87,11 @@ const Cart = () => {
           onApprove={function (data, actions) {
             return actions.order.capture().then(function (details) {
               const shipping = details.purchase_units[0].shipping;
-              createOrder({
-                customer: shipping.name.full_name,
+              createOrderHandler({
                 address: shipping.address.address_line_1,
                 total: amount,
                 method: 1,
+                cart: cart,
               });
             });
           }}
@@ -94,9 +100,10 @@ const Cart = () => {
     );
   };
 
-  const handleRemove=(id)=>{
-    dispatch(removeProductInCart({id}))
-  }
+  const handleRemove = (id) => {
+    dispatch(removeProductInCart({ id }));
+  };
+
   useEffect(() => {
     if (isAuthenticated === false && loading === false) router.push("/login");
   }, [isAuthenticated, loading]);
@@ -108,11 +115,18 @@ const Cart = () => {
     }
   }, [success]);
 
-  if (loading||cartLoading) {
+  useEffect(() => {
+    if (createOrderSuccess) {
+      dispatch(resetAddOrder());
+      dispatch(getAllCart())
+    }
+  }, [createOrderSuccess]);
+
+  if (loading || cartLoading) {
     return <Loading />;
   }
 
-
+  if (createOrderLoading) return <Loading />;
 
   return (
     <div className={styles.container}>
@@ -170,7 +184,12 @@ const Cart = () => {
                   </span>
                 </td>
                 <td>
-                  <button className={styles.removebutton} onClick={()=>handleRemove(product._id)}>Remove</button>
+                  <button
+                    className={styles.removebutton}
+                    onClick={() => handleRemove(product._id)}
+                  >
+                    Remove
+                  </button>
                 </td>
               </tr>
             ))}
@@ -222,7 +241,14 @@ const Cart = () => {
           )}
         </div>
       </div>
-      {cash && <OrderDetail total={cart.total} createOrder={createOrder} setCash={setCash}/>}
+      {cash && (
+        <OrderDetail
+          total={amount}
+          cart={cart}
+          createOrder={createOrderHandler}
+          setCash={setCash}
+        />
+      )}
     </div>
   );
 };
