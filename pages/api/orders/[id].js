@@ -15,10 +15,15 @@ const handler = asyncError(async (req, res) => {
   if (!isObjectId)
     return errorHandler(res, 400, "Please Provid a valid Product Id");
 
-  const order = await Order.findOne({ _id: id, userId: user._id }).populate({
-    path: "userId",
-    select: "name email img phone", // Add the fields you want to include
-  });
+  const order = await Order.findOne({ _id: id, userId: user._id })
+    .populate({
+      path: "userId",
+      select: "name email img phone", // Add the fields you want to include
+    })
+    .populate({
+      path: "orders.userId",
+      select: "name email img phone", // Add the fields you want to include
+    });
   if (!order) return errorHandler(res, 404, "Order Not Found");
   res.status(200).json({
     success: true,

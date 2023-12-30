@@ -31,7 +31,7 @@ export const getAllProduct = createAsyncThunk(
 
 //add new product
 const addProductAPI = async (data) => {
-  const response = await fetch("/api/products/create", {
+  const response = await fetch("/api/products/admin/create", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

@@ -61,6 +61,7 @@ OrderSchema.pre("find", function (next) {
     path: "orders.userId",
     select: "name email img phone", // Add the fields you want to include
   });
+  next()
 });
 export const Order =
   mongoose.models.Order || mongoose.model("Order", OrderSchema);

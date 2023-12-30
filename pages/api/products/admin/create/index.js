@@ -1,7 +1,7 @@
-import { asyncError, errorHandler } from "../../../../middlewares/error";
-import { Product } from "../../../../models/product";
-import { checkAuth } from "../../../../utils/features";
-import dbConnect from "../../../../utils/mongo";
+import { asyncError, errorHandler } from "../../../../../middlewares/error";
+import { Product } from "../../../../../models/product";
+import { checkAuth } from "../../../../../utils/features";
+import dbConnect from "../../../../../utils/mongo";
 
 const handler = asyncError(async (req, res) => {
   await dbConnect();

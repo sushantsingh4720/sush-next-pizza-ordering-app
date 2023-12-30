@@ -8,10 +8,13 @@ const handler = asyncError(async (req, res) => {
     return errorHandler(res, 400, "Only GET Method is allowed");
   const user = await checkAuth(req);
   if (!user) return errorHandler(res, 401, "Login First");
-  const orders = await Order.find({ userId: user._id }).populate({
-    path: "orders.userId",
-    select: "name email img phone", // Add the fields you want to include
-  });
+  const orders = await Order.aggregate([
+    {
+      $match: {
+        "orders.userId": user._id,
+      },
+    },
+  ]);
   res.status(200).json({
     success: true,
     message: "Orders successfully fatched",
