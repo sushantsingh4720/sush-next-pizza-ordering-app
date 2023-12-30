@@ -1,15 +1,27 @@
 import styles from "../../styles/Order.module.css";
 import Image from "next/image";
-import axios from "axios";
+import { parse } from "cookie";
+import { useSelector } from "react-redux";
+import { useEffect } from "react";
+import { useRouter } from "next/router";
 
 const Order = ({ order }) => {
-  const status = order.status;
+  const router = useRouter();
+  const { loading, isAuthenticated } = useSelector((state) => state.user);
+  const status = order?.status;
 
   const statusClass = (index) => {
     if (index - status < 1) return styles.done;
     if (index - status === 1) return styles.inProgress;
     if (index - status > 1) return styles.undone;
   };
+
+  useEffect(() => {
+    if (isAuthenticated === false && loading === false) {
+      router.push("/login");
+    }
+  }, [isAuthenticated, loading, router]);
+
   return (
     <div className={styles.container}>
       <div className={styles.left}>
@@ -29,7 +41,7 @@ const Order = ({ order }) => {
                   <span className={styles.id}>{order._id}</span>
                 </td>
                 <td>
-                  <span className={styles.name}>{order.customer}</span>
+                  <span className={styles.name}>{order.userId}</span>
                 </td>
                 <td>
                   <span className={styles.address}>{order.address}</span>
@@ -117,15 +129,37 @@ const Order = ({ order }) => {
   );
 };
 
-export const getServerSideProps = async ({ params }) => {
+export const getServerSideProps = async ({ req, params }) => {
   try {
-    const res = await axios.get(
-      `http://localhost:3000/api/orders/${params.id}`
-    );
+    const cookies = parse(req.headers.cookie || "");
+    const token = cookies.token;
+    if (!token) {
+      return {
+        redirect: {
+          destination: "/login",
+        },
+      };
+    }
+    const res = await fetch(`http://localhost:3000/api/orders/${params.id}`, {
+      cache: "no-cache",
+      headers: {
+        cookie: `token=${token}`,
+      },
+    });
+    const data = await res.json();
+    if (!data.success) {
+      return {
+        notFound: true,
+      };
+    }
     return {
-      props: { order: res.data },
+      props: { order: data.order || {} },
     };
-  } catch (error) {}
+  } catch (error) {
+    return {
+      notFound: true,
+    };
+  }
 };
 
 export default Order;

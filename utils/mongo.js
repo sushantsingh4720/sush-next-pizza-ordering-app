@@ -1,16 +1,19 @@
-import mongoose from "mongoose";
-const dbConnect = () => {
-  mongoose.set("strictQuery", true);
-  mongoose.connect(process.env.MONGO_URL);
-  mongoose.set("runValidators", true);
-  mongoose.connection.on("connected", () => {
-    // console.log("Connected to Mongoose Server");
-  });
-  mongoose.connection.on("error", () => {
-    // console.log("`Error connecting to Mongoose server: ${err.message}`");
-  });
-  mongoose.connection.on("disconnect", () => {
-    // console.log("Disconnected from Mongoose Server");
-  });
+import mongoose from "mongoose"
+
+const connection = {};
+
+export const dbConnect = async () => {
+  try {
+    if(connection.isConnected) {
+      console.log("Using existing connection");
+      return;
+    }
+    const db = await mongoose.connect(process.env.MONGO_URL);
+    connection.isConnected = db.connections[0].readyState;
+  } catch (error) {
+    console.log(error);
+    throw new Error(error);
+  }
 };
-export default dbConnect;
+
+export default dbConnect
