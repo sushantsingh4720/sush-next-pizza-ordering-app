@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { loginUser, logout } from "../../redux/userSlice";
 
 import Link from "next/link";
-import { useRouter } from 'next/router';
+import { useRouter } from "next/router";
 import Loading from "../../components/Loading";
 
 const Login = () => {
@@ -17,8 +17,8 @@ const Login = () => {
   const dispatch = useDispatch();
 
   // Move the logic here
-  if (isAuthenticated===true&&loading===false ) {
-    router.push('/');
+  if (isAuthenticated === true && loading === false) {
+    router.push("/");
   }
 
   const loginHandler = async (e) => {
@@ -26,7 +26,7 @@ const Login = () => {
     dispatch(loginUser({ email, password }));
   };
 
-  if (loading) {
+  if (loading || loading === undefined) {
     return <Loading />;
   }
 

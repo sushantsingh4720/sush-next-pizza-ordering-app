@@ -13,7 +13,6 @@ import toast from "react-hot-toast";
 import Loading from "../../components/Loading";
 
 const Product = ({ pizza }) => {
-  
   const { isAuthenticated } = useSelector((state) => state.user);
   const { success, loading } = useSelector((state) => state.cart);
   const [price, setPrice] = useState(pizza.prices[0]);
@@ -66,7 +65,7 @@ const Product = ({ pizza }) => {
     }
   }, [success]);
 
-  if (loading) return <Loading />;
+  if (loading || loading === undefined) return <Loading />;
 
   return (
     <div className={styles.container}>

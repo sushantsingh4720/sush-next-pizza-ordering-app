@@ -1,11 +1,19 @@
 import axios from "axios";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "../../styles/Admin.module.css";
+import { useSelector } from "react-redux";
+import Loading from "../../components/Loading";
+import toast from "react-hot-toast";
+import { useRouter } from "next/router";
 
-const Index = ({ orders, products }) => {
-  const [pizzaList, setPizzaList] = useState(products);
-  const [orderList, setOrderList] = useState(orders);
+const Admin = () => {
+  const { isAuthenticated, user, loading } = useSelector((state) => state.user);
+
+  const router = useRouter();
+
+  const [pizzaList, setPizzaList] = useState([]);
+  const [orderList, setOrderList] = useState([]);
   const status = ["preparing", "on the way", "delivered"];
 
   const handleDelete = async (id) => {
@@ -14,8 +22,7 @@ const Index = ({ orders, products }) => {
         "http://localhost:3000/api/products/" + id
       );
       setPizzaList(pizzaList.filter((pizza) => pizza._id !== id));
-    } catch (err) {
-    }
+    } catch (err) {}
   };
 
   const handleStatus = async (id) => {
@@ -30,10 +37,17 @@ const Index = ({ orders, products }) => {
         res.data,
         ...orderList.filter((order) => order._id !== id),
       ]);
-    } catch (err) {
-
-    }
+    } catch (err) {}
   };
+
+  useEffect(() => {
+    if (!isAuthenticated && !user.isSeller && loading === false) {
+      toast.error("Only admin can access this Page");
+      router.push("/");
+    }
+  }, [isAuthenticated, user.isSeller, loading]);
+
+  if (loading || loading === undefined) return <Loading />;
 
   return (
     <div className={styles.container}>
@@ -115,26 +129,4 @@ const Index = ({ orders, products }) => {
   );
 };
 
-// export const getServerSideProps = async (ctx) => {
-//   const myCookie = ctx.req?.cookies || "";
-//   if (myCookie.token !== process.env.TOKEN) {
-//     return {
-//       redirect: {
-//         destination: "/admin/login",
-//         permanent: false,
-//       },
-//     };
-//   }
-
-//   const productRes = await axios.get("http://localhost:3000/api/products");
-//   const orderRes = await axios.get("http://localhost:3000/api/orders");
-
-//   return {
-//     props: {
-//       orders: orderRes.data,
-//       products: productRes.data,
-//     },
-//   };
-// };
-
-export default Index;
+export default Admin;

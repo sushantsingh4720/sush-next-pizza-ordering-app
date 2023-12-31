@@ -118,15 +118,21 @@ const Cart = () => {
   useEffect(() => {
     if (createOrderSuccess) {
       dispatch(resetAddOrder());
-      dispatch(getAllCart())
+      dispatch(getAllCart());
     }
   }, [createOrderSuccess]);
 
-  if (loading || cartLoading) {
+  if (
+    loading ||
+    loading === undefined ||
+    cartLoading ||
+    cartLoading === undefined
+  ) {
     return <Loading />;
   }
 
-  if (createOrderLoading) return <Loading />;
+  if (createOrderLoading || createOrderLoading === undefined)
+    return <Loading />;
 
   return (
     <div className={styles.container}>

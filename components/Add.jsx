@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import styles from "../styles/Add.module.css";
 import axios from "axios";
-import { useRouter } from "next/router";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addProduct,

@@ -28,7 +28,7 @@ const Register = () => {
     dispatch(registerUser({ email, password, name }));
   };
 
-  if (loading) {
+  if (loading || loading === undefined) {
     return <Loading />;
   }
 
