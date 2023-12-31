@@ -6,38 +6,64 @@ import { useSelector } from "react-redux";
 import Loading from "../../components/Loading";
 import toast from "react-hot-toast";
 import { useRouter } from "next/router";
+import { parse } from "cookie";
+import { useDispatch } from "react-redux";
+import { getAllProduct } from "../../redux/productSlice";
 
-const Admin = () => {
+const Admin = ({ orders, products }) => {
   const { isAuthenticated, user, loading } = useSelector((state) => state.user);
 
   const router = useRouter();
-
-  const [pizzaList, setPizzaList] = useState([]);
-  const [orderList, setOrderList] = useState([]);
+  const dispatch = useDispatch();
+  const [pizzaList, setPizzaList] = useState(products);
+  const [orderList, setOrderList] = useState(orders);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const status = ["preparing", "on the way", "delivered"];
 
   const handleDelete = async (id) => {
+    setDeleteLoading(true);
     try {
-      const res = await axios.delete(
-        "http://localhost:3000/api/products/" + id
+      const response = await axios.delete(
+        `http://localhost:3000/api/products/admin/delete/${id}`
       );
-      setPizzaList(pizzaList.filter((pizza) => pizza._id !== id));
-    } catch (err) {}
+      const res = response.data;
+      if (res.success) {
+        toast.success(res.message);
+        setPizzaList(pizzaList.filter((pizza) => pizza._id !== id));
+        dispatch(getAllProduct());
+      } else {
+        toast.error(res.message);
+      }
+    } catch (err) {
+      toast.error("Interval Server Error");
+    } finally {
+      setDeleteLoading(false);
+    }
   };
 
   const handleStatus = async (id) => {
     const item = orderList.filter((order) => order._id === id)[0];
     const currentStatus = item.status;
-
+    setDeleteLoading(true);
     try {
-      const res = await axios.put("http://localhost:3000/api/orders/" + id, {
-        status: currentStatus + 1,
-      });
-      setOrderList([
-        res.data,
-        ...orderList.filter((order) => order._id !== id),
-      ]);
-    } catch (err) {}
+      const response = await axios.patch(
+        `http://localhost:3000/api/orders/admin/update/${id}`,
+        {
+          status: currentStatus + 1,
+        }
+      );
+      const res = response.data;
+      if (res.success) {
+        toast.success(res.message);
+        setOrderList([
+          res.updatedOrder,
+          ...orderList.filter((order) => order._id !== id),
+        ]);
+      }
+    } catch (err) {
+    } finally {
+      setDeleteLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -47,7 +73,7 @@ const Admin = () => {
     }
   }, [isAuthenticated, user.isSeller, loading]);
 
-  if (loading || loading === undefined) return <Loading />;
+  if (loading || loading === undefined || deleteLoading) return <Loading />;
 
   return (
     <div className={styles.container}>
@@ -109,14 +135,14 @@ const Admin = () => {
             <tbody key={order._id}>
               <tr className={styles.trTitle}>
                 <td>{order._id.slice(0, 5)}...</td>
-                <td>{order.customer}</td>
+                <td>{order.userId.slice(0, 5)}...</td>
                 <td>${order.total}</td>
                 <td>
                   {order.method === 0 ? <span>cash</span> : <span>paid</span>}
                 </td>
                 <td>{status[order.status]}</td>
                 <td>
-                  <button onClick={() => handleStatus(order._id)}>
+                  <button onClick={() => handleStatus(order._id)} disabled={order.status>=2&&true}>
                     Next Stage
                   </button>
                 </td>
@@ -130,3 +156,47 @@ const Admin = () => {
 };
 
 export default Admin;
+
+export const getServerSideProps = async ({ req }) => {
+  try {
+    const cookies = parse(req.headers.cookie || "");
+    const token = cookies.token;
+    if (!token) {
+      return {
+        redirect: {
+          destination: "/login",
+        },
+      };
+    }
+
+    const productResponse = await fetch(
+      "http://localhost:3000/api/products/admin",
+      {
+        cache: "no-cache",
+        headers: {
+          cookie: `token=${token}`,
+        },
+      }
+    );
+    const orderResponse = await fetch(
+      "http://localhost:3000/api/orders/admin",
+      {
+        cache: "no-cache",
+        headers: {
+          cookie: `token=${token}`,
+        },
+      }
+    );
+
+    const productRes = await productResponse.json();
+    const orderRes = await orderResponse.json();
+
+    return {
+      props: {
+        products: productRes.products,
+        orders: orderRes.orders,
+      },
+    };
+  } catch (error) {
+  }
+};

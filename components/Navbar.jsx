@@ -33,6 +33,9 @@ const Navbar = () => {
           {user.isSeller&&<Link href='/admin' passHref>
           <li className={styles.listItem}>Admin</li>
           </Link>}
+          {user&&user.isSeller===false&&<Link href='/orders' passHref>
+          <li className={styles.listItem}>orders</li>
+          </Link>}
         </ul>
       </div>
       <LogoutBtn/>

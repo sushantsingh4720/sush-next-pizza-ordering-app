@@ -11,7 +11,7 @@ const handler = asyncError(async (req, res) => {
   const orders = await Order.aggregate([
     {
       $match: {
-        "orders.userId": user._id,
+        userId: user._id,
       },
     },
   ]);

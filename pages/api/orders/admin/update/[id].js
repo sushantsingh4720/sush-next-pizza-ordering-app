@@ -24,6 +24,6 @@ const handler = asyncError(async (req, res) => {
   );
   res
     .status(200)
-    .json({ success: true, message: "order status updated successfully" });
+    .json({ success: true, message: "order status updated successfully",updatedOrder });
 });
 export default handler;

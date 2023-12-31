@@ -119,6 +119,7 @@ const Cart = () => {
     if (createOrderSuccess) {
       dispatch(resetAddOrder());
       dispatch(getAllCart());
+      router.push('/orders')
     }
   }, [createOrderSuccess]);
 
@@ -131,7 +132,7 @@ const Cart = () => {
     return <Loading />;
   }
 
-  if (createOrderLoading || createOrderLoading === undefined)
+  if (createOrderLoading )
     return <Loading />;
 
   return (
