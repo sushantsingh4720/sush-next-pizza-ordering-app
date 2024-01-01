@@ -16,24 +16,24 @@ const Footer = () => {
         <div className={styles.card}>
           <h1 className={styles.title}>FIND OUR RESTAURANTS</h1>
           <p className={styles.text}>
-            1654 R. Don Road #304.
-            <br /> NewYork, 85022
-            <br /> (602) 867-1010
+            Pizza House
+            <br /> Prayagraj
+            <br /> +915643454545
           </p>
           <p className={styles.text}>
-            2356 K. Laquie Rd #235.
-            <br /> NewYork, 85022
-            <br /> (602) 867-1011
+            Pizza King
+            <br /> Indor
+            <br /> +913454545454
           </p>
           <p className={styles.text}>
-            1614 E. Erwin St #104.
-            <br /> NewYork, 85022
-            <br /> (602) 867-1012
+            Pizza The Queen
+            <br /> Delhi
+            <br /> +916565454545
           </p>
           <p className={styles.text}>
-            1614 W. Caroll St #125.
-            <br /> NewYork, 85022
-            <br /> (602) 867-1013
+           Pizza Restaurants
+            <br /> Dubai
+            <br /> 56562536
           </p>
         </div>
         <div className={styles.card}>
