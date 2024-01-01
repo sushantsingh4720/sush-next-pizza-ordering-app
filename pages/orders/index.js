@@ -47,8 +47,12 @@ const Orders = ({ orders }) => {
                   {order.method === 0 ? <span>cash</span> : <span>paid</span>}
                 </td>
                 <td>{status[order.status]}</td>
-                <td >
-                  <Link href={`/orders/${order._id}`} passHref  className={styles.linkButton}>
+                <td>
+                  <Link
+                    href={`/orders/${order._id}`}
+                    passHref
+                    className={styles.linkButton}
+                  >
                     View Order
                   </Link>
                 </td>
@@ -74,18 +78,17 @@ export const getServerSideProps = async ({ req }) => {
         },
       };
     }
-    const orderResponse = await fetch('http://localhost:3000/api/orders', {
-      cache: 'no-store',
+    const orderResponse = await fetch(`${process.env.URL}/api/orders`, {
+      cache: "no-store",
       headers: {
         cookie: `token=${token}`,
       },
     });
-    const orderRes =await orderResponse.json();
+    const orderRes = await orderResponse.json();
     return {
       props: {
         orders: orderRes.orders,
       },
     };
-  } catch (error) {
-  }
+  } catch (error) {}
 };

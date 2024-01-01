@@ -23,9 +23,7 @@ const Admin = ({ orders, products }) => {
   const handleDelete = async (id) => {
     setDeleteLoading(true);
     try {
-      const response = await axios.delete(
-        `http://localhost:3000/api/products/admin/delete/${id}`
-      );
+      const response = await axios.delete(`/api/products/admin/delete/${id}`);
       const res = response.data;
       if (res.success) {
         toast.success(res.message);
@@ -46,12 +44,9 @@ const Admin = ({ orders, products }) => {
     const currentStatus = item.status;
     setDeleteLoading(true);
     try {
-      const response = await axios.patch(
-        `http://localhost:3000/api/orders/admin/update/${id}`,
-        {
-          status: currentStatus + 1,
-        }
-      );
+      const response = await axios.patch(`/api/orders/admin/update/${id}`, {
+        status: currentStatus + 1,
+      });
       const res = response.data;
       if (res.success) {
         toast.success(res.message);
@@ -142,7 +137,10 @@ const Admin = ({ orders, products }) => {
                 </td>
                 <td>{status[order.status]}</td>
                 <td>
-                  <button onClick={() => handleStatus(order._id)} disabled={order.status>=2&&true}>
+                  <button
+                    onClick={() => handleStatus(order._id)}
+                    disabled={order.status >= 2 && true}
+                  >
                     Next Stage
                   </button>
                 </td>
@@ -170,7 +168,7 @@ export const getServerSideProps = async ({ req }) => {
     }
 
     const productResponse = await fetch(
-      "http://localhost:3000/api/products/admin",
+      `${process.env.URL}/api/products/admin`,
       {
         cache: "no-cache",
         headers: {
@@ -178,15 +176,12 @@ export const getServerSideProps = async ({ req }) => {
         },
       }
     );
-    const orderResponse = await fetch(
-      "http://localhost:3000/api/orders/admin",
-      {
-        cache: "no-cache",
-        headers: {
-          cookie: `token=${token}`,
-        },
-      }
-    );
+    const orderResponse = await fetch(`${process.env.URL}/api/orders/admin`, {
+      cache: "no-cache",
+      headers: {
+        cookie: `token=${token}`,
+      },
+    });
 
     const productRes = await productResponse.json();
     const orderRes = await orderResponse.json();
@@ -197,6 +192,5 @@ export const getServerSideProps = async ({ req }) => {
         orders: orderRes.orders,
       },
     };
-  } catch (error) {
-  }
+  } catch (error) {}
 };

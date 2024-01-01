@@ -140,7 +140,7 @@ export const getServerSideProps = async ({ req, params }) => {
         },
       };
     }
-    const res = await fetch(`http://localhost:3000/api/orders/${params.id}`, {
+    const res = await fetch(`${process.env.URL}/api/orders/${params.id}`, {
       cache: "no-cache",
       headers: {
         cookie: `token=${token}`,
