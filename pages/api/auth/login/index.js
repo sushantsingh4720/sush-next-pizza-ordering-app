@@ -1,8 +1,8 @@
-import { asyncError, errorHandler } from "../../../../middlewares/error";
-import { User } from "../../../../models/user";
-import { cookieSetter, generateToken } from "../../../../utils/features";
-import dbConnect from "../../../../utils/mongo";
 import bcrypt from "bcrypt";
+import dbConnect from "../../../../utils/mongo";
+import { asyncError, errorHandler } from "../../../../middlewares/error";
+import { cookieSetter, generateToken } from "../../../../utils/features";
+import { User } from "../../../../models/user";
 
 const handler = asyncError(async (req, res) => {
   if (req.method !== "POST")
