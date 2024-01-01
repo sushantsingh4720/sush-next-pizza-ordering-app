@@ -1,10 +1,7 @@
 import { asyncError, errorHandler } from "../../../../middlewares/error";
-import {User}  from "../../../../models/user";
-import {
-  cookieSetter,
-  generateToken,
-} from "../../../../utils/features";
-import dbConnect from "../../../../utils/mongo"
+import { User } from "../../../../models/user";
+import { cookieSetter, generateToken } from "../../../../utils/features";
+import dbConnect from "../../../../utils/mongo";
 import bcrypt from "bcrypt";
 
 const handler = asyncError(async (req, res) => {

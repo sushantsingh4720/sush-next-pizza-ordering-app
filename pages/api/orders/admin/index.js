@@ -17,7 +17,9 @@ const handler = asyncError(async (req, res) => {
       },
     },
   ]);
-  res.status(200).json({ success: true, message: "Fetched Seller Orders",orders });
+  res
+    .status(200)
+    .json({ success: true, message: "Fetched Seller Orders", orders });
 });
 
 export default handler;
